@@ -1,0 +1,34 @@
+@import '../../styles/vars';
+
+.news {
+	display: grid;
+	grid-template-columns: auto minmax(320px, 1200px) auto;
+	grid-template-areas: '. header .' '. content .';
+
+	&__header {
+		grid-area: header;
+	}
+
+	&__content {
+		padding: 25px 0 50px;
+		grid-area: content;
+	}
+
+	&__buttons {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 30px;
+
+		&--active {
+			color: $black !important;
+		}
+	}
+
+	&__view-buttons > * {
+		margin-left: 15px;
+	}
+
+	&__sort-buttons > * {
+		margin-right: 15px !important;
+	}
+}

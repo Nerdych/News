@@ -1,0 +1,69 @@
+@import '../../styles/vars';
+
+.news {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 20px;
+
+	&__item {
+		display: grid;
+		grid-template-areas: 'content' 'footer';
+		background-color: $white;
+	}
+
+	&__item-content {
+		grid-area: content;
+		padding: 30px 30px 25px;
+	}
+
+	&__item-footer {
+		grid-area: footer;
+		display: flex;
+		justify-content: space-between;
+		padding: 5px 30px;
+		background-color: $light-gray;
+		color: $gray;
+	}
+
+	&__item-button--gray,
+	&__item-button--blue {
+		font-weight: 400;
+		border-bottom: 1px solid;
+	}
+
+	&__item-button--gray {
+		color: $gray;
+	}
+
+	&__item-button--blue {
+		color: $blue;
+	}
+
+	&__item-img {
+		width: 200px;
+		height: 100px;
+		grid-area: img;
+		align-self: center;
+		margin-left: 30px;
+
+		img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+	}
+
+	&--with-image {
+		grid-template-columns: 1fr;
+	}
+
+	&--with-image &__item {
+		grid-template-areas: 'img content' 'footer footer';
+		grid-template-columns: auto 1fr;
+	}
+
+	p {
+		line-height: 20px;
+		margin: 25px 0;
+	}
+}

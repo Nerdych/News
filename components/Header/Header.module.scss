@@ -1,0 +1,27 @@
+@import '../../styles/vars';
+
+.header {
+	padding: 35px 0;
+	display: grid;
+	grid-template-columns: auto 30px 40px 1fr;
+	grid-template-areas: 'title . button input';
+	border-bottom: 1px solid #e5e5e5;
+
+	&__button {
+		grid-area: button;
+		background-color: $white;
+		padding: 10px;
+		border-radius: 50%;
+		box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.05);
+	}
+
+	&__search {
+		width: 320px;
+		grid-area: input;
+		justify-self: flex-end;
+	}
+
+	&__title {
+		grid-area: title;
+	}
+}
