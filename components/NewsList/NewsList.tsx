@@ -4,7 +4,7 @@ import { NewsListProps } from './NewsList.props';
 import { Atag } from '../Atag/Atag';
 import { Htag } from '../Htag/Htag';
 import { Card } from '../Card/Card';
-import { dateTranslate } from '../../functions/dateTranslate';
+import { dateTranslate } from '../../helpers/dateTranslate';
 
 export const NewsList = ({ items = [], withImage }: NewsListProps): JSX.Element => {
 	return (

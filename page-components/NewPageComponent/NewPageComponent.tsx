@@ -14,51 +14,41 @@ import { NewsList } from '../../components/NewsList/NewsList';
 import { Pagination } from '../../components/Pagination/Pagination';
 import { Button } from '../../components/Button/Button';
 import { News } from '../../interfaces/news.interface';
+import { NextRouter, useRouter } from 'next/dist/client/router';
+import { domains } from '../../helpers/contants';
+import { getNews } from '../../api/news';
 
 export const NewsPageComponent = ({ news }: NewsPageComponentProps): JSX.Element => {
+	const router: NextRouter = useRouter();
 	const [withImage, setWithImage] = useState<boolean>(false);
 	const [sortNews, setSortNews] = useState<News[] | null>(null);
 
 	useEffect(() => {
 		setSortNews(news);
-		// axios
-		// 	.get('https://lenta.ru/rss/news')
-		// 	.then(res => xmlParser.xml2json(res.data, { compact: true, spaces: 4 }))
-		// 	.then(data => console.log(data));
-		// axios
-		// 	.get('https://www.mos.ru/rss')
-		// 	.then(res => xmlParser.xml2json(res.data, { compact: true, spaces: 4 }))
-		// 	.then(data => console.log(data));
-	}, []);
+	}, [news]);
 
-	const onClickLenta = () => {
-		setSortNews(news.filter(item => item.source === 'www.lenta.ru'));
+	const searchNews = (str: string) => {
+		setSortNews(news.filter(item => item.description?._text.includes(str) || item.title._text.includes(str)));
 	};
 
-	const onClickMos = () => {
-		setSortNews(news.filter(item => item.source === 'www.mos.ru'));
-	};
-
-	const onClickAll = () => {
-		setSortNews(news);
+	const updateNews = () => {
+		getNews(domains[router.query.source]);
 	};
 
 	return (
 		<div className={styles.news}>
-			<Header className={styles.news__header} />
+			<Header className={styles.news__header} onSearch={searchNews} onUpdate={updateNews} />
 			<div className={styles.news__content}>
 				<div className={styles.news__buttons}>
 					<div className={styles['news__sort-buttons']}>
 						<Link href="/" passHref>
-							<Atag active onClick={onClickAll}>
-								Все
-							</Atag>
+							<Atag active>Все</Atag>
 						</Link>
-						<Link href="/" passHref>
-							<Atag onClick={onClickLenta}>Lenta.ru</Atag>
+						<Link href="/lenta" passHref>
+							<Atag>Lenta.ru</Atag>
 						</Link>
-						<Link href="/" passHref>
-							<Atag onClick={onClickMos}>Mos.ru</Atag>
+						<Link href="/mos" passHref>
+							<Atag>Mos.ru</Atag>
 						</Link>
 					</div>
 

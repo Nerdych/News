@@ -3,7 +3,7 @@ import { ButtonProps } from './Button.props';
 
 export const Button = ({ className, children, ...props }: ButtonProps): JSX.Element => {
 	return (
-		<button {...props} className={`${styles.button} ${className}`}>
+		<button className={`${styles.button} ${className}`} {...props}>
 			{children}
 		</button>
 	);
