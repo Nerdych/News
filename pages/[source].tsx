@@ -2,7 +2,7 @@ import { withLayout } from '../Layout/Layout';
 import { NewsPageComponent } from '../page-components/NewPageComponent/NewPageComponent';
 import { News } from '../interfaces/news.interface';
 import { domains } from '../helpers/contants';
-import { getNews } from '../api/news';
+import { getNews } from '../apiFunctions/news';
 
 const NewsPage = ({ news }: NewsPageProps): JSX.Element => {
 	return <NewsPageComponent news={news} />;

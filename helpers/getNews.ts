@@ -1,4 +1,4 @@
-import { getNews } from '../api/news';
+import { getNews } from '../apiFunctions/news';
 import { domains } from './contants';
 
 export const getMosNews = async () => {
