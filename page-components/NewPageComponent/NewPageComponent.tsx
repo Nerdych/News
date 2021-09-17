@@ -60,22 +60,17 @@ export const NewsPageComponent = ({ news }: NewsPageComponentProps): JSX.Element
 		let newNews = [...allNews];
 
 		switch (router.query.source) {
-			case 'mos': {
+			case 'mos':
 				newNews = await getMosNews();
 				break;
-			}
-			case 'lenta': {
+			case 'lenta':
 				newNews = await getLentaNews();
 				break;
-			}
-			case 'all': {
+			case 'all':
 				newNews = await getAllNews();
 				break;
-			}
-			default: {
-				setLoading(false);
-				return;
-			}
+			default:
+				break;
 		}
 
 		setAllNews(newNews);
