@@ -42,6 +42,7 @@ export const NewsPageComponent = ({ news }: NewsPageComponentProps): JSX.Element
 					item.title._text.toLowerCase().includes(str.toLowerCase())
 			)
 		);
+		setPagination(prev => ({ ...prev, currentPage: 1 }));
 	};
 
 	const updateNews = async () => {
