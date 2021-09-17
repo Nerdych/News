@@ -3,4 +3,4 @@ export const domains = {
 	mos: 'https://www.mos.ru/rss',
 };
 
-export const mainDomain = 'https://react-test-sigma-seven.vercel.app/api';
+export const mainDomain = 'react-test-sigma-seven.vercel.app/api';
