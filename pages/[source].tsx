@@ -39,11 +39,14 @@ export const getMosNews = async () => {
 
 export const getLentaNews = async () => {
 	let items = await getNews(domains.lenta);
-	return items.rss.channel.item.map(item => ({
+
+	items = items.rss.channel.item.map(item => ({
 		...item,
 		source: 'www.lenta.ru',
-		description: item.description?._cdata && { _text: item.description._cdata },
+		description: item.description ? { _text: item.description._cdata } : { _text: '' },
 	}));
+
+	return items;
 };
 
 export const getAllNews = async () => {

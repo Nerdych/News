@@ -23,26 +23,36 @@ export const NewsPageComponent = ({ news }: NewsPageComponentProps): JSX.Element
 	const [sortNews, setSortNews] = useState<News[] | null>(null);
 	const [pagination, setPagination] = useState({ currentPage: 1, perPage: 4 });
 	const [loading, setLoading] = useState<boolean>(false);
+	const [filter, setFilter] = useState<string>('');
 
 	useEffect(() => {
-		setSortNews(null);
-		setAllNews(news);
+		if (filter.length) {
+			setAllNews(news);
+			searchNews(filter, news);
+		} else {
+			setSortNews(null);
+			setAllNews(news);
+		}
+
 		setPagination(prev => ({ ...prev, currentPage: 1 }));
 	}, [news]);
 
-	const searchNews = (str: string) => {
+	useEffect(() => {
+		searchNews(filter, allNews);
+	}, [filter]);
+
+	const searchNews = (str: string, elements: News[]) => {
 		if (!str.length) {
 			setSortNews(null);
 			return;
 		}
 		setSortNews(
-			allNews.filter(
+			elements.filter(
 				item =>
 					item.description?._text.toLowerCase().includes(str.toLowerCase()) ||
 					item.title._text.toLowerCase().includes(str.toLowerCase())
 			)
 		);
-		setPagination(prev => ({ ...prev, currentPage: 1 }));
 	};
 
 	const updateNews = async () => {
@@ -76,9 +86,13 @@ export const NewsPageComponent = ({ news }: NewsPageComponentProps): JSX.Element
 		setPagination(prev => ({ ...prev, currentPage: +page }));
 	};
 
+	const onClickSearch = (str: string) => {
+		setFilter(str);
+	};
+
 	return (
 		<div className={styles.news}>
-			<Header className={styles.header} onSearch={searchNews} onUpdate={updateNews} />
+			<Header className={styles.header} onSearch={onClickSearch} onUpdate={updateNews} />
 			<div className={styles.content}>
 				<div className={styles.buttonsWrapper}>
 					<div className={styles.sortButtonsWrapper}>

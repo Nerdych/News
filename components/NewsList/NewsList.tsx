@@ -11,7 +11,7 @@ export const NewsList = ({ items = [], page, perPage, withImage }: NewsListProps
 	return (
 		<div className={cn(styles.news, [{ [styles.withImage]: withImage }])}>
 			{!items.length && <>Новостей нет</>}
-			{items.slice(perPage * page - 4, perPage * page).map((item, index) => (
+			{items.slice(perPage * page - perPage, perPage * page).map((item, index) => (
 				<Card className={styles.item} key={index}>
 					{withImage && item.enclosure?._attributes && (
 						<div className={styles.imgWrapper}>

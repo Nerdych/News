@@ -6,7 +6,7 @@ import React from 'react';
 
 export const Pagination = ({ page, numberOfPages, onClickNumber }: PaginationProps): JSX.Element => {
 	const createButton = num => {
-		if (num < 1 || num > numberOfPages) return <></>;
+		if (num < 1 || num > numberOfPages) return <React.Fragment key={num} />;
 		return (
 			<Button
 				className={cn(styles.button, {
@@ -27,9 +27,9 @@ export const Pagination = ({ page, numberOfPages, onClickNumber }: PaginationPro
 
 			if (numberOfPages >= 6) {
 				array.push(
-					<Button className={styles.button} key="...">
+					<span className={styles.ellipsis} key="...">
 						...
-					</Button>
+					</span>
 				);
 				array.push(createButton(numberOfPages));
 			}
@@ -48,9 +48,9 @@ export const Pagination = ({ page, numberOfPages, onClickNumber }: PaginationPro
 		const array = new Array(3).fill('').map((_, index) => createButton(page + index - 2));
 		array.push(createButton(page + 1));
 		array.push(
-			<Button className={cn(styles.button, styles.button)} key="...">
+			<span className={styles.ellipsis} key="...">
 				...
-			</Button>
+			</span>
 		);
 		array.push(createButton(numberOfPages));
 		return array;
