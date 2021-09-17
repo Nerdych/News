@@ -57,26 +57,26 @@ export const NewsPageComponent = ({ news }: NewsPageComponentProps): JSX.Element
 
 	const updateNews = async () => {
 		setLoading(true);
-		let updateNews = [...allNews];
+		let newNews = [...allNews];
 
 		switch (router.query.source) {
 			case 'mos': {
-				updateNews = await getMosNews();
+				newNews = await getMosNews();
 				break;
 			}
 			case 'lenta': {
-				updateNews = await getLentaNews();
+				newNews = await getLentaNews();
 				break;
 			}
 			case 'all': {
-				updateNews = await getAllNews();
+				newNews = await getAllNews();
 				break;
 			}
 			default:
 				return;
 		}
 
-		setAllNews(updateNews);
+		setAllNews(newNews);
 		setPagination(prev => ({ ...prev, currentPage: 1 }));
 		setLoading(false);
 	};
