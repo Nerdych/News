@@ -7,7 +7,7 @@ import WithImageIcon from '../../public/img/withImage.svg';
 import cn from 'classnames';
 import { NewsPageComponentProps } from './NewPageComponent.props';
 import { News } from '../../interfaces/news.interface';
-import { getAllNews, getLentaNews, getMosNews } from '../../pages/[source]';
+import { getAllNews, getLentaNews, getMosNews } from '../../helpers/getNews';
 
 import Link from 'next/link';
 import { Header } from '../../components/Header/Header';

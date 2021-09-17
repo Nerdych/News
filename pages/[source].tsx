@@ -3,6 +3,7 @@ import { NewsPageComponent } from '../page-components/NewPageComponent/NewPageCo
 import { News } from '../interfaces/news.interface';
 import { domains } from '../helpers/contants';
 import { getNews } from '../api/news';
+import { getAllNews, getLentaNews, getMosNews } from '../helpers/getNews';
 
 const NewsPage = ({ news }: NewsPageProps): JSX.Element => {
 	return <NewsPageComponent news={news} />;
@@ -30,31 +31,6 @@ export const getServerSideProps = async ({ query }) => {
 			news,
 		},
 	};
-};
-
-export const getMosNews = async () => {
-	let items = await getNews(domains.mos);
-	return (items = items.rss.channel.item.map(item => ({ ...item, source: 'www.mos.ru' })));
-};
-
-export const getLentaNews = async () => {
-	let items = await getNews(domains.lenta);
-
-	items = items.rss.channel.item.map(item => ({
-		...item,
-		source: 'www.lenta.ru',
-		description: item.description ? { _text: item.description._cdata } : { _text: '' },
-	}));
-
-	return items;
-};
-
-export const getAllNews = async () => {
-	const newsLenta = await getLentaNews();
-	const newsMos = await getMosNews();
-	return [...newsLenta, ...newsMos].sort((a, b) => {
-		return new Date(a.pubDate._text) < new Date(b.pubDate._text) ? 1 : -1;
-	});
 };
 
 interface NewsPageProps extends Record<string, unknown> {
