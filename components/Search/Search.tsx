@@ -1,11 +1,12 @@
-import styles from './Search.module.scss';
-import { SearchProps } from './Search.props';
-import searchIcon from '../../public/img/search.svg';
+import { ChangeEvent, FormEvent, useState } from 'react';
 
-import Image from 'next/image';
+import styles from './Search.module.scss';
+import SearchIcon from '../../public/img/search.svg';
+import cn from 'classnames';
+import { SearchProps } from './Search.props';
+
 import { Button } from '../Button/Button';
 import { Input } from '../Input/Input';
-import { ChangeEvent, FormEvent, useState } from 'react';
 
 export const Search = ({ className, onSearch, ...props }: SearchProps): JSX.Element => {
 	const [value, setValue] = useState<string>('');
@@ -16,13 +17,10 @@ export const Search = ({ className, onSearch, ...props }: SearchProps): JSX.Elem
 	};
 
 	return (
-		<form className={`${styles.search} ${className}`} onSubmit={onSubmit} {...props}>
-			<Input
-				className={styles.search__input}
-				onChange={(e: ChangeEvent<HTMLInputElement>) => setValue(e.target.value)}
-			/>
-			<Button className={styles.search__button} type="submit">
-				<Image src={searchIcon} alt="Поиск" />
+		<form className={cn(styles.search, className)} onSubmit={onSubmit} {...props}>
+			<Input onChange={(e: ChangeEvent<HTMLInputElement>) => setValue(e.target.value)} />
+			<Button className={styles.button} type="submit">
+				<SearchIcon />
 			</Button>
 		</form>
 	);

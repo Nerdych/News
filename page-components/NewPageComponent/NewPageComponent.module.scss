@@ -2,33 +2,51 @@
 
 .news {
 	display: grid;
-	grid-template-columns: auto minmax(320px, 1200px) auto;
+	grid-template-columns: auto minmax(280px, 1200px) auto;
 	grid-template-areas: '. header .' '. content .';
+	padding: 0 20px;
+}
 
-	&__header {
-		grid-area: header;
+.header {
+	grid-area: header;
+}
+
+.content {
+	padding: 25px 0 50px;
+	grid-area: content;
+}
+
+.buttonsWrapper {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 30px;
+}
+
+.activeButton {
+	color: $black !important;
+}
+
+.sortButtonsWrapper > * + *,
+.viewButtonsWrapper > * + * {
+	margin-left: 15px;
+}
+
+.active {
+	svg {
+		-moz-transition: all 0.2s;
+		-webkit-transition: all 0.2s;
+		-o-transition: all 0.2s;
+		transition: all 0.2s;
+		fill: $blue;
+	}
+}
+
+@media (max-width: 768px) {
+	.content {
+		padding: 20px 0 50px;
 	}
 
-	&__content {
-		padding: 25px 0 50px;
-		grid-area: content;
-	}
-
-	&__buttons {
-		display: flex;
-		justify-content: space-between;
-		margin-bottom: 30px;
-
-		&--active {
-			color: $black !important;
-		}
-	}
-
-	&__view-buttons > * {
-		margin-left: 15px;
-	}
-
-	&__sort-buttons > * {
-		margin-right: 15px !important;
+	.buttonsWrapper {
+		margin-bottom: 15px;
 	}
 }

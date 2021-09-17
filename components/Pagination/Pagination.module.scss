@@ -1,13 +1,25 @@
 @import '../../styles/vars';
 
-.input {
-	box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.05);
-	border-radius: 3px;
-	padding: 10px;
-	border: none;
-	color: $black;
-	background: $white;
-	font-family: $font-family;
-	line-height: 22px;
-	width: 100%;
+.pagination {
+	display: flex;
+	justify-content: center;
+	margin-top: 50px;
+}
+
+.button {
+	font-weight: bold;
+	font-size: 18px;
+	line-height: 21px;
+
+	& + & {
+		margin-left: 15px;
+	}
+
+	&:hover {
+		color: $blue;
+	}
+}
+
+.active {
+	color: $blue;
 }

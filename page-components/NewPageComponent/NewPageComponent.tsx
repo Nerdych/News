@@ -1,70 +1,124 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import styles from './NewPageComponent.module.scss';
-import withoutImageIcon from '../../public/img/withoutImage.svg';
-import withImageIcon from '../../public/img/withImage.svg';
-import xmlParser from 'xml-js';
-import { NewsPageComponentProps } from './NewPageComponent.props';
+import { MouseEvent, useEffect, useState } from 'react';
+import { NextRouter, useRouter } from 'next/dist/client/router';
 
-import Image from 'next/image';
+import styles from './NewPageComponent.module.scss';
+import WithoutImageIcon from '../../public/img/withoutImage.svg';
+import WithImageIcon from '../../public/img/withImage.svg';
+import cn from 'classnames';
+import { NewsPageComponentProps } from './NewPageComponent.props';
+import { News } from '../../interfaces/news.interface';
+import { getAllNews, getLentaNews, getMosNews } from '../../pages/[source]';
+
 import Link from 'next/link';
 import { Header } from '../../components/Header/Header';
 import { Atag } from '../../components/Atag/Atag';
 import { NewsList } from '../../components/NewsList/NewsList';
 import { Pagination } from '../../components/Pagination/Pagination';
 import { Button } from '../../components/Button/Button';
-import { News } from '../../interfaces/news.interface';
-import { NextRouter, useRouter } from 'next/dist/client/router';
-import { domains } from '../../helpers/contants';
-import { getNews } from '../../api/news';
 
 export const NewsPageComponent = ({ news }: NewsPageComponentProps): JSX.Element => {
 	const router: NextRouter = useRouter();
 	const [withImage, setWithImage] = useState<boolean>(false);
+	const [allNews, setAllNews] = useState<News[]>(news);
 	const [sortNews, setSortNews] = useState<News[] | null>(null);
+	const [pagination, setPagination] = useState({ currentPage: 1, perPage: 4 });
+	const [loading, setLoading] = useState<boolean>(false);
 
 	useEffect(() => {
-		setSortNews(news);
+		setSortNews(null);
+		setAllNews(news);
+		setPagination(prev => ({ ...prev, currentPage: 1 }));
 	}, [news]);
 
 	const searchNews = (str: string) => {
-		setSortNews(news.filter(item => item.description?._text.includes(str) || item.title._text.includes(str)));
+		if (!str.length) {
+			setSortNews(null);
+			return;
+		}
+		setSortNews(
+			allNews.filter(
+				item =>
+					item.description?._text.toLowerCase().includes(str.toLowerCase()) ||
+					item.title._text.toLowerCase().includes(str.toLowerCase())
+			)
+		);
 	};
 
-	const updateNews = () => {
-		getNews(domains[router.query.source]);
+	const updateNews = async () => {
+		setLoading(true);
+		let updateNews;
+
+		switch (router.query.source) {
+			case 'mos': {
+				updateNews = await getMosNews();
+				break;
+			}
+			case 'lenta': {
+				updateNews = await getLentaNews();
+				break;
+			}
+			case 'all': {
+				updateNews = await getAllNews();
+				break;
+			}
+			default:
+				return;
+		}
+
+		setAllNews(updateNews);
+		setPagination(prev => ({ ...prev, currentPage: 1 }));
+		setLoading(false);
+	};
+
+	const onClickPagination = (e: MouseEvent<HTMLButtonElement>) => {
+		const page = e.currentTarget.dataset.page ?? 1;
+		setPagination(prev => ({ ...prev, currentPage: +page }));
 	};
 
 	return (
 		<div className={styles.news}>
-			<Header className={styles.news__header} onSearch={searchNews} onUpdate={updateNews} />
-			<div className={styles.news__content}>
-				<div className={styles.news__buttons}>
-					<div className={styles['news__sort-buttons']}>
-						<Link href="/" passHref>
-							<Atag active>Все</Atag>
+			<Header className={styles.header} onSearch={searchNews} onUpdate={updateNews} />
+			<div className={styles.content}>
+				<div className={styles.buttonsWrapper}>
+					<div className={styles.sortButtonsWrapper}>
+						<Link href="/all" passHref>
+							<Atag active={router.query.source === 'all'}>Все</Atag>
 						</Link>
 						<Link href="/lenta" passHref>
-							<Atag>Lenta.ru</Atag>
+							<Atag active={router.query.source === 'lenta'}>Lenta.ru</Atag>
 						</Link>
 						<Link href="/mos" passHref>
-							<Atag>Mos.ru</Atag>
+							<Atag active={router.query.source === 'mos'}>Mos.ru</Atag>
 						</Link>
 					</div>
 
-					<div className={styles['news__view-buttons']}>
-						<Button onClick={() => setWithImage(true)}>
-							<Image src={withImageIcon} alt="C картиноками" />
+					<div className={styles.viewButtonsWrapper}>
+						<Button onClick={() => setWithImage(true)} className={cn({ [styles.active]: withImage })}>
+							<WithImageIcon />
 						</Button>
-						<Button onClick={() => setWithImage(false)}>
-							<Image src={withoutImageIcon} alt="Без картинок" />
+						<Button onClick={() => setWithImage(false)} className={cn({ [styles.active]: !withImage })}>
+							<WithoutImageIcon />
 						</Button>
 					</div>
 				</div>
 
-				<NewsList items={sortNews ?? news} withImage={withImage} />
-
-				<Pagination />
+				{loading ? (
+					<>Загрузка...</>
+				) : (
+					<>
+						<NewsList
+							page={pagination.currentPage}
+							perPage={pagination.perPage}
+							items={sortNews ?? allNews}
+							withImage={withImage}
+						/>
+						<Pagination
+							page={pagination.currentPage}
+							numberOfPages={Math.ceil((sortNews?.length ?? allNews.length) / pagination.perPage)}
+							onClickNumber={onClickPagination}
+						/>
+					</>
+				)}
 			</div>
 		</div>
 	);

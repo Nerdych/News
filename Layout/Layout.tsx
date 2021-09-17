@@ -1,6 +1,6 @@
-import styles from './Layout.module.scss';
 import { FunctionComponent } from 'react';
 import { LayoutProps } from './Layout.props';
+import styles from './Layout.module.scss';
 
 const Layout = ({ children }: LayoutProps): JSX.Element => {
 	return (

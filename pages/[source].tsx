@@ -1,36 +1,27 @@
-import axios from 'axios';
 import { withLayout } from '../Layout/Layout';
 import { NewsPageComponent } from '../page-components/NewPageComponent/NewPageComponent';
-import xmlParser from 'xml-js';
 import { News } from '../interfaces/news.interface';
 import { domains } from '../helpers/contants';
+import { getNews } from '../api/news';
 
 const NewsPage = ({ news }: NewsPageProps): JSX.Element => {
 	return <NewsPageComponent news={news} />;
 };
 
 export const getServerSideProps = async ({ query }) => {
-	const fetchUrl = async (url: string) => {
-		return await axios
-			.get(url)
-			.then(res => xmlParser.xml2json(res.data, { compact: true, spaces: 4 }))
-			.then(data => JSON.parse(data));
-	};
-
-	let news = await fetchUrl(domains[query.source]);
+	let news;
 
 	switch (query.source) {
 		case 'mos': {
-			news = news.rss.channel.item.map(item => ({ ...item, source: 'www.mos.ru' }));
+			news = await getMosNews();
 			break;
 		}
 		case 'lenta': {
-			news = news.rss.channel.item.map(item => ({
-				...item,
-				source: 'www.lenta.ru',
-				description: { _text: item.description._cdata },
-			}));
+			news = await getLentaNews();
 			break;
+		}
+		case 'all': {
+			news = await getAllNews();
 		}
 	}
 
@@ -39,6 +30,28 @@ export const getServerSideProps = async ({ query }) => {
 			news,
 		},
 	};
+};
+
+export const getMosNews = async () => {
+	let items = await getNews(domains.mos);
+	return (items = items.rss.channel.item.map(item => ({ ...item, source: 'www.mos.ru' })));
+};
+
+export const getLentaNews = async () => {
+	let items = await getNews(domains.lenta);
+	return items.rss.channel.item.map(item => ({
+		...item,
+		source: 'www.lenta.ru',
+		description: item.description?._cdata && { _text: item.description._cdata },
+	}));
+};
+
+export const getAllNews = async () => {
+	const newsLenta = await getLentaNews();
+	const newsMos = await getMosNews();
+	return [...newsLenta, ...newsMos].sort((a, b) => {
+		return new Date(a.pubDate._text) < new Date(b.pubDate._text) ? 1 : -1;
+	});
 };
 
 interface NewsPageProps extends Record<string, unknown> {

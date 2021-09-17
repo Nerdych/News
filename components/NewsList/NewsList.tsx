@@ -1,39 +1,41 @@
 import styles from './NewsList.module.scss';
 import { NewsListProps } from './NewsList.props';
+import { dateTranslate } from '../../helpers/dateTranslate';
+import cn from 'classnames';
 
 import { Atag } from '../Atag/Atag';
-import { Htag } from '../Htag/Htag';
+import { Htag } from '../Heading/Heading';
 import { Card } from '../Card/Card';
-import { dateTranslate } from '../../helpers/dateTranslate';
 
-export const NewsList = ({ items = [], withImage }: NewsListProps): JSX.Element => {
+export const NewsList = ({ items = [], page, perPage, withImage }: NewsListProps): JSX.Element => {
 	return (
-		<div className={`${styles.news} ${withImage ? styles['news--with-image'] : null}`}>
-			{items.map((item, index) => (
-				<Card className={styles.news__item} key={index}>
+		<div className={cn(styles.news, [{ [styles.withImage]: withImage }])}>
+			{!items.length && <>Новостей нет</>}
+			{items.slice(perPage * page - 4, perPage * page).map((item, index) => (
+				<Card className={styles.item} key={index}>
 					{withImage && item.enclosure?._attributes && (
-						<div className={styles['news__item-img']}>
-							<img src={item.enclosure?._attributes.url} />
+						<div className={styles.imgWrapper}>
+							<img src={item.enclosure?._attributes.url} alt={item.title._text} />
 						</div>
 					)}
 
-					<div className={styles['news__item-content']} onClick={() => console.log(item)}>
-						<Htag level={2}>
+					<div className={styles.content}>
+						<Htag className={styles.title} level={2}>
 							<Atag href={item.link._text} target="_blank">
 								{item.title._text}
 							</Atag>
 						</Htag>
 						{item.description && <p>{item.description._text}</p>}
 						{!withImage && (
-							<Atag className={styles['news__item-button--blue']} href={item.link._text} target="_blank">
+							<Atag className={styles.blueButton} href={item.link._text} target="_blank">
 								Подробнее
 							</Atag>
 						)}
 					</div>
 
-					<div className={styles['news__item-footer']}>
-						<Atag className={styles['news__item-button--gray']}>{item.source}</Atag>
-						<span className={styles['news__item-date']}>{dateTranslate(new Date(item.pubDate._text))}</span>
+					<div className={styles.footer}>
+						<Atag className={styles.grayButton}>{item.source}</Atag>
+						<span className={styles.date}>{dateTranslate(new Date(item.pubDate._text))}</span>
 					</div>
 				</Card>
 			))}

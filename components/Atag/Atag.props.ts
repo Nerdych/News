@@ -1,4 +1,4 @@
-import React, { ReactNode, DetailedHTMLProps, AnchorHTMLAttributes } from 'react';
+import { ReactNode, AnchorHTMLAttributes } from 'react';
 
 export interface AtagProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
 	children: ReactNode;
