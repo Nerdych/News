@@ -3,7 +3,7 @@ import { NewsListProps } from './NewsList.props';
 import { dateTranslate } from '../../helpers/dateTranslate';
 import cn from 'classnames';
 
-import { Atag } from '../Atag/Atag';
+import Atag from '../Atag/Atag';
 import { Htag } from '../Heading/Heading';
 import { Card } from '../Card/Card';
 

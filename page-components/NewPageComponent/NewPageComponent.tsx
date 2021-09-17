@@ -11,7 +11,7 @@ import { getAllNews, getLentaNews, getMosNews } from '../../pages/[source]';
 
 import Link from 'next/link';
 import { Header } from '../../components/Header/Header';
-import { Atag } from '../../components/Atag/Atag';
+import Atag from '../../components/Atag/Atag';
 import { NewsList } from '../../components/NewsList/NewsList';
 import { Pagination } from '../../components/Pagination/Pagination';
 import { Button } from '../../components/Button/Button';
