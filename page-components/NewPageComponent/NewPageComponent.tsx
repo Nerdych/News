@@ -15,6 +15,8 @@ import Atag from '../../components/Atag/Atag';
 import { NewsList } from '../../components/NewsList/NewsList';
 import { Pagination } from '../../components/Pagination/Pagination';
 import { Button } from '../../components/Button/Button';
+import axios from 'axios';
+import { mainDomain } from '../../helpers/contants';
 
 export const NewsPageComponent = ({ news }: NewsPageComponentProps): JSX.Element => {
 	const router: NextRouter = useRouter();
@@ -57,23 +59,23 @@ export const NewsPageComponent = ({ news }: NewsPageComponentProps): JSX.Element
 
 	const updateNews = async () => {
 		setLoading(true);
-		let newNews = [...allNews];
+		let newNews;
 
 		switch (router.query.source) {
 			case 'mos':
-				newNews = await getMosNews();
+				newNews = await axios.get(mainDomain + '/mos');
 				break;
 			case 'lenta':
-				newNews = await getLentaNews();
+				newNews = await axios.get(mainDomain + '/lenta');
 				break;
 			case 'all':
-				newNews = await getAllNews();
+				newNews = await axios.get(mainDomain + '/all');
 				break;
 			default:
 				break;
 		}
 
-		setAllNews(newNews);
+		setAllNews(newNews.data);
 		setPagination(prev => ({ ...prev, currentPage: 1 }));
 		setLoading(false);
 	};
@@ -84,6 +86,7 @@ export const NewsPageComponent = ({ news }: NewsPageComponentProps): JSX.Element
 	};
 
 	const onClickSearch = (str: string) => {
+		fetch('http://localhost:3000/api/mos');
 		setFilter(str);
 	};
 
