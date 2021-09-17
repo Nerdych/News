@@ -57,7 +57,7 @@ export const NewsPageComponent = ({ news }: NewsPageComponentProps): JSX.Element
 
 	const updateNews = async () => {
 		setLoading(true);
-		let updateNews;
+		let updateNews = [...allNews];
 
 		switch (router.query.source) {
 			case 'mos': {
