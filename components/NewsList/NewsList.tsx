@@ -34,7 +34,9 @@ export const NewsList = ({ items = [], page, perPage, withImage }: NewsListProps
 					</div>
 
 					<div className={styles.footer}>
-						<Atag className={styles.grayButton}>{item.source}</Atag>
+						<Atag className={styles.grayButton} href={'https://' + item.source} target="_blank">
+							{item.source}
+						</Atag>
 						<span className={styles.date}>{dateTranslate(new Date(item.pubDate._text))}</span>
 					</div>
 				</Card>
