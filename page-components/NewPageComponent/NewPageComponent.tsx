@@ -72,8 +72,10 @@ export const NewsPageComponent = ({ news }: NewsPageComponentProps): JSX.Element
 				newNews = await getAllNews();
 				break;
 			}
-			default:
+			default: {
+				setLoading(false);
 				return;
+			}
 		}
 
 		setAllNews(newNews);
