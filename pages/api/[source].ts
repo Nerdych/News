@@ -17,5 +17,19 @@ export default async function handler(req, res) {
 		}
 	}
 
-	res.json(JSON.stringify(news));
+	if (req.query.search) {
+		news = news.filter(
+			item =>
+				item.description?._text.toLowerCase().includes(req.query.search.toLowerCase()) ||
+				item.title._text.toLowerCase().includes(req.query.search.toLowerCase())
+		);
+	}
+
+	const numberOfPages = Math.ceil(news.length / req.query.perPage);
+	news = news.slice(
+		(req.query.page - 1) * req.query.perPage,
+		(req.query.page - 1) * req.query.perPage + +req.query.perPage
+	);
+
+	res.json(JSON.stringify({ news, numberOfPages }));
 }

@@ -1,23 +1,24 @@
-import { Button } from '../Button/Button';
 import styles from './Pagination.module.scss';
 import { PaginationProps } from './Pagination.props';
 import cn from 'classnames';
 import React from 'react';
+import Atag from '../Atag/Atag';
+import Link from 'next/link';
 
-export const Pagination = ({ page, numberOfPages, onClickNumber }: PaginationProps): JSX.Element => {
+export const Pagination = ({ page, numberOfPages, createUrl }: PaginationProps): JSX.Element => {
 	const createButton = num => {
 		if (num < 1 || num > numberOfPages) return <React.Fragment key={num} />;
 		return (
-			<Button
-				className={cn(styles.button, {
-					[styles.active]: page === num,
-				})}
-				data-page={num}
-				onClick={onClickNumber}
-				key={num}
-			>
-				{num}
-			</Button>
+			<Link href={createUrl(num)} key={num}>
+				<Atag
+					className={cn(styles.a, {
+						[styles.active]: page === num,
+					})}
+					data-page={num}
+				>
+					{num}
+				</Atag>
+			</Link>
 		);
 	};
 

@@ -7,11 +7,11 @@ import Atag from '../Atag/Atag';
 import { Htag } from '../Heading/Heading';
 import { Card } from '../Card/Card';
 
-export const NewsList = ({ items = [], page, perPage, withImage }: NewsListProps): JSX.Element => {
+export const NewsList = ({ items = [], withImage }: NewsListProps): JSX.Element => {
 	return (
 		<div className={cn(styles.news, [{ [styles.withImage]: withImage }])}>
 			{!items.length && <>Новостей нет</>}
-			{items.slice(perPage * page - perPage, perPage * page).map((item, index) => (
+			{items.map((item, index) => (
 				<Card className={styles.item} key={index}>
 					{withImage && item.enclosure?._attributes && (
 						<div className={styles.imgWrapper}>

@@ -1,11 +1,11 @@
 import { withLayout } from '../Layout/Layout';
 import { NewsPageComponent } from '../page-components/NewPageComponent/NewPageComponent';
 import { News } from '../interfaces/news.interface';
-import { domains } from '../helpers/contants';
-import { getNews } from '../apiFunctions/news';
+import { mainDomain } from '../helpers/contants';
+import axios from 'axios';
 
-const NewsPage = ({ news }: NewsPageProps): JSX.Element => {
-	return <NewsPageComponent news={news} />;
+const NewsPage = ({ items: { news, numberOfPages } }: NewsPageProps): JSX.Element => {
+	return <NewsPageComponent news={news} numberOfPages={numberOfPages} />;
 };
 
 export const getServerSideProps = async ({ query }) => {
@@ -13,50 +13,62 @@ export const getServerSideProps = async ({ query }) => {
 
 	switch (query.source) {
 		case 'mos': {
-			news = await getMosNews();
+			news = await getMosNews(query.page, query.perPage, query.search);
 			break;
 		}
 		case 'lenta': {
-			news = await getLentaNews();
+			news = await getLentaNews(query.page, query.perPage, query.search);
 			break;
 		}
 		case 'all': {
-			news = await getAllNews();
+			news = await getAllNews(query.page, query.perPage, query.search);
 			break;
 		}
 	}
 
 	return {
 		props: {
-			news,
+			items: news,
 		},
 	};
 };
 
-export const getMosNews = async () => {
-	let items = await getNews(domains.mos);
-	return (items = items.rss.channel.item.map(item => ({ ...item, source: 'www.mos.ru' })));
+const getMosNews = async (page, perPage, search) => {
+	let url = `/mos?page=${page}&perPage=${perPage}`;
+
+	if (search) {
+		url = url + `&search=${encodeURIComponent(search)}`;
+	}
+
+	let items = await axios.get(mainDomain + url);
+	return items.data;
 };
 
-export const getLentaNews = async () => {
-	let items = await getNews(domains.lenta);
-	return items.rss.channel.item.map(item => ({
-		...item,
-		source: 'www.lenta.ru',
-		description: item.description?._cdata && { _text: item.description._cdata },
-	}));
+const getLentaNews = async (page, perPage, search) => {
+	let url = `/lenta?page=${page}&perPage=${perPage}`;
+	if (search) {
+		url = url + `&search=${encodeURIComponent(search)}`;
+	}
+
+	let items = await axios.get(mainDomain + url);
+	return items.data;
 };
 
-export const getAllNews = async () => {
-	const newsLenta = await getLentaNews();
-	const newsMos = await getMosNews();
-	return [...newsLenta, ...newsMos].sort((a, b) => {
-		return new Date(a.pubDate._text) < new Date(b.pubDate._text) ? 1 : -1;
-	});
+const getAllNews = async (page, perPage, search) => {
+	let url = `/all?page=${page}&perPage=${perPage}`;
+	if (search) {
+		url = url + `&search=${encodeURIComponent(search)}`;
+	}
+
+	let items = await axios.get(mainDomain + url);
+	return items.data;
 };
 
 interface NewsPageProps extends Record<string, unknown> {
-	news: News[];
+	items: {
+		news: News[];
+		numberOfPages: number;
+	};
 }
 
 export default withLayout(NewsPage);

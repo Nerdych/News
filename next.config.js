@@ -12,7 +12,7 @@ module.exports = {
 		return [
 			{
 				source: '/',
-				destination: '/all',
+				destination: '/all?page=1&perPage=4',
 				permanent: true,
 			},
 		];

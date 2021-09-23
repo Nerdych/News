@@ -1,93 +1,70 @@
-import { MouseEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NextRouter, useRouter } from 'next/dist/client/router';
 
 import styles from './NewPageComponent.module.scss';
 import WithoutImageIcon from '../../public/img/withoutImage.svg';
 import WithImageIcon from '../../public/img/withImage.svg';
 import cn from 'classnames';
+import axios from 'axios';
 import { NewsPageComponentProps } from './NewPageComponent.props';
 import { News } from '../../interfaces/news.interface';
-import { getAllNews, getLentaNews, getMosNews } from '../../helpers/getNews';
+import { mainDomain } from '../../helpers/contants';
 
 import Link from 'next/link';
-import { Header } from '../../components/Header/Header';
 import Atag from '../../components/Atag/Atag';
+import { Header } from '../../components/Header/Header';
 import { NewsList } from '../../components/NewsList/NewsList';
 import { Pagination } from '../../components/Pagination/Pagination';
 import { Button } from '../../components/Button/Button';
-import axios from 'axios';
-import { mainDomain } from '../../helpers/contants';
+import { convertJSONToUrlEncoded } from '../../helpers/urlEncoded';
 
-export const NewsPageComponent = ({ news }: NewsPageComponentProps): JSX.Element => {
-	const router: NextRouter = useRouter();
+export const NewsPageComponent = ({ news, numberOfPages }: NewsPageComponentProps): JSX.Element => {
+	const router: any = useRouter();
 	const [withImage, setWithImage] = useState<boolean>(false);
 	const [allNews, setAllNews] = useState<News[]>(news);
-	const [sortNews, setSortNews] = useState<News[] | null>(null);
-	const [pagination, setPagination] = useState({ currentPage: 1, perPage: 4 });
 	const [loading, setLoading] = useState<boolean>(false);
 	const [filter, setFilter] = useState<string>('');
 
 	useEffect(() => {
-		if (filter.length) {
-			setAllNews(news);
-			searchNews(filter, news);
-		} else {
-			setSortNews(null);
-			setAllNews(news);
-		}
-
-		setPagination(prev => ({ ...prev, currentPage: 1 }));
+		setAllNews(news);
 	}, [news]);
 
 	useEffect(() => {
-		searchNews(filter, allNews);
+		router.push(
+			`/${router.query.source}${convertJSONToUrlEncoded({ page: 1, perPage: 4, search: filter ?? null })}`
+		);
 	}, [filter]);
 
-	const searchNews = (str: string, elements: News[]) => {
-		if (!str.length) {
-			setSortNews(null);
-			return;
-		}
-		setSortNews(
-			elements.filter(
-				item =>
-					item.description?._text.toLowerCase().includes(str.toLowerCase()) ||
-					item.title._text.toLowerCase().includes(str.toLowerCase())
-			)
-		);
-	};
-
 	const updateNews = async () => {
-		setLoading(true);
-		let newNews;
+		if (+router.query.page === 1) {
+			setLoading(true);
+			let newNews;
 
-		switch (router.query.source) {
-			case 'mos':
-				newNews = await axios.get(mainDomain + '/mos');
-				break;
-			case 'lenta':
-				newNews = await axios.get(mainDomain + '/lenta');
-				break;
-			case 'all':
-				newNews = await axios.get(mainDomain + '/all');
-				break;
-			default:
-				break;
+			let urlApi: string = mainDomain + router.asPath;
+
+			newNews = await axios.get(urlApi);
+
+			setAllNews(newNews.data.news);
+			setLoading(false);
+		} else {
+			router.push(
+				`/${router.query.source}${convertJSONToUrlEncoded({ page: 1, perPage: 4, search: filter ?? null })}`
+			);
 		}
-
-		setAllNews(newNews.data);
-		setPagination(prev => ({ ...prev, currentPage: 1 }));
-		setLoading(false);
-	};
-
-	const onClickPagination = (e: MouseEvent<HTMLButtonElement>) => {
-		const page = e.currentTarget.dataset.page ?? 1;
-		setPagination(prev => ({ ...prev, currentPage: +page }));
 	};
 
 	const onClickSearch = (str: string) => {
-		fetch('http://localhost:3000/api/mos');
 		setFilter(str);
+	};
+
+	const createUrl = page => {
+		let urlLink = `/${router.query.source}${convertJSONToUrlEncoded({
+			page: page,
+			perPage: 4,
+			search: filter ?? null,
+		})}`;
+
+		return urlLink;
 	};
 
 	return (
@@ -96,13 +73,22 @@ export const NewsPageComponent = ({ news }: NewsPageComponentProps): JSX.Element
 			<div className={styles.content}>
 				<div className={styles.buttonsWrapper}>
 					<div className={styles.sortButtonsWrapper}>
-						<Link href="/all" passHref>
+						<Link
+							href={`/all${convertJSONToUrlEncoded({ page: 1, perPage: 4, search: filter ?? null })}`}
+							passHref
+						>
 							<Atag active={router.query.source === 'all'}>Все</Atag>
 						</Link>
-						<Link href="/lenta" passHref>
+						<Link
+							href={`/lenta${convertJSONToUrlEncoded({ page: 1, perPage: 4, search: filter ?? null })}`}
+							passHref
+						>
 							<Atag active={router.query.source === 'lenta'}>Lenta.ru</Atag>
 						</Link>
-						<Link href="/mos" passHref>
+						<Link
+							href={`/mos${convertJSONToUrlEncoded({ page: 1, perPage: 4, search: filter ?? null })}`}
+							passHref
+						>
 							<Atag active={router.query.source === 'mos'}>Mos.ru</Atag>
 						</Link>
 					</div>
@@ -121,17 +107,8 @@ export const NewsPageComponent = ({ news }: NewsPageComponentProps): JSX.Element
 					<>Загрузка...</>
 				) : (
 					<>
-						<NewsList
-							page={pagination.currentPage}
-							perPage={pagination.perPage}
-							items={sortNews ?? allNews}
-							withImage={withImage}
-						/>
-						<Pagination
-							page={pagination.currentPage}
-							numberOfPages={Math.ceil((sortNews?.length ?? allNews.length) / pagination.perPage)}
-							onClickNumber={onClickPagination}
-						/>
+						<NewsList items={allNews} withImage={withImage} />
+						<Pagination page={+router.query.page} numberOfPages={numberOfPages} createUrl={createUrl} />
 					</>
 				)}
 			</div>

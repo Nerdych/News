@@ -6,10 +6,11 @@
 	margin-top: 50px;
 }
 
-.button {
+.a {
 	font-weight: bold;
 	font-size: 18px;
 	line-height: 21px;
+	color: $black;
 
 	& + & {
 		margin-left: 15px;
